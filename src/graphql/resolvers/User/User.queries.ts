@@ -37,21 +37,13 @@ const UserQueries = {
       const { valid } = validateQueryParams({ limit, page });
       if (!valid) throw new UserInputError("Invalid query params.");
 
-      let count: number;
-      let data: OUser[];
+      const query = { name: { $regex: isEmpty(search) ? "" : `.*${search}*.`, $options: "i" } };
 
-      if (isEmpty(search)) {
-        count = await User.count();
-        data = await User.find()
-          .skip(page - 1)
-          .limit(limit);
-      } else {
-        const query = { name: { $regex: `.*${search}*.` } };
-        count = await User.count(query);
-        data = await User.find(query)
-          .skip(page - 1)
-          .limit(limit);
-      }
+      const count = await User.count(query);
+      const data = await User.find(query)
+        .skip(page - 1)
+        .limit(limit)
+        .sort({ createdAt: "desc" });
 
       return {
         data,

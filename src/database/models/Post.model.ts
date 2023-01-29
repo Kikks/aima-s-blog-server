@@ -1,10 +1,19 @@
 import mongoose, { Schema } from "mongoose";
+const slug = require("mongoose-slug-generator");
 
 const PostSchema = new Schema(
   {
     title: {
       type: String,
       required: true,
+    },
+    audio: {
+      type: String,
+    },
+    slug: {
+      type: String,
+      slug: "title",
+      unique: true,
     },
     coverImage: {
       type: String,
@@ -30,6 +39,8 @@ const PostSchema = new Schema(
   },
   { timestamps: true }
 );
+
+PostSchema.plugin(slug);
 
 const Post = mongoose.model("Post", PostSchema);
 

@@ -1,5 +1,5 @@
 import { ApolloError } from "apollo-server-express";
-import Admin from "../../../database/models/Admin.model";
+import { Admin } from "../../../database/models";
 import { OAdmin } from "../../../types";
 import { AppContext } from "../../../types/AppContext.type";
 import { checkAdmin } from "../../../utils/checkAuth";

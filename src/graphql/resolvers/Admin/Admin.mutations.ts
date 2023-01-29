@@ -1,7 +1,7 @@
 import { UserInputError } from "apollo-server-express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Admin from "../../../database/models/Admin.model";
+import { Admin } from "../../../database/models/";
 import { IAdmin, OAdmin } from "../../../types";
 import { AppContext } from "../../../types/AppContext.type";
 import { checkAdmin } from "../../../utils/checkAuth";

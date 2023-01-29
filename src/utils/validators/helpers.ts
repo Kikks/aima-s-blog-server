@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 
 export const isEmpty = (value?: string | number) =>
-  typeof value === "undefined" || String(value).trim() === "";
+  !!!value || typeof value === "undefined" || String(value).trim() === "";
 
 export const isNumber = (value: any) => !Number.isNaN(Number(value));
 

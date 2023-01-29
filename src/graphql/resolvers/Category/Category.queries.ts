@@ -8,29 +8,35 @@ import { isEmpty } from "../../../utils/validators/helpers";
 import { validateQueryParams } from "../../../utils/validators/QueryParams.validator";
 
 const CategoryQueries = {
-  getCategories: async (
+  async getCategory(_root: any, { id }: { id: string }): Promise<OCategory> {
+    try {
+      const category = await Category.findById(id);
+
+      if (!category) {
+        throw new UserInputError("No category with that id exists.");
+      }
+
+      return category;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
+  async getCategories(
     _root: any,
     { limit = 20, page = 1, search = "" }: QueryParams
-  ): Promise<Pagination<OCategory>> => {
+  ): Promise<Pagination<OCategory>> {
     try {
       const { valid } = validateQueryParams({ limit, page });
       if (!valid) throw new UserInputError("Invalid query params.");
 
-      let count: number;
-      let data: OCategory[];
+      const query = { name: { $regex: isEmpty(search) ? "" : `.*${search}*.`, $options: "i" } };
 
-      if (isEmpty(search)) {
-        count = await Category.count();
-        data = await Category.find()
-          .skip(page - 1)
-          .limit(limit);
-      } else {
-        const query = { name: { $regex: `.*${search}*.` } };
-        count = await Category.count(query);
-        data = await Category.find(query)
-          .skip(page - 1)
-          .limit(limit);
-      }
+      const count = await Category.count(query);
+      const data = await Category.find(query)
+        .skip(page - 1)
+        .limit(limit)
+        .sort({ name: "asc" });
 
       return {
         data,

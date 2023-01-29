@@ -52,6 +52,7 @@
 		"jwks-rsa": "^3.0.1",
 		"lodash.merge": "^4.6.2",
 		"mongodb": "^4.4.1",
-		"mongoose": "^6.8.4"
+		"mongoose": "^6.8.4",
+		"mongoose-slug-generator": "^1.0.4"
 	}
 }

@@ -1,17 +1,16 @@
 import { ObjectId } from "mongodb";
+import { Document, PopulatedDoc } from "mongoose";
 import { OUser } from "./User.type";
 
 type IComment = {
   body: string;
-  post: ObjectId;
-  user: ObjectId;
 };
 
 type OComment = {
   _id: ObjectId;
   body: string;
   post: ObjectId;
-  user: OUser;
+  user: PopulatedDoc<OUser & Document>;
   createdAt: NativeDate;
   updatedAt: NativeDate;
 };

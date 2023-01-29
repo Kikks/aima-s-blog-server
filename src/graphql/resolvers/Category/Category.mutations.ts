@@ -6,11 +6,11 @@ import { ICategory, OCategory } from "../../../types";
 import { validateCreateCategoryInput } from "../../../utils/validators";
 
 const CategoryMutations = {
-  createCategory: async (
+  async createCategory(
     _root: undefined,
     { input }: { input: ICategory },
     context: AppContext
-  ): Promise<OCategory> => {
+  ): Promise<OCategory> {
     try {
       checkAdmin(context);
 
@@ -36,11 +36,11 @@ const CategoryMutations = {
       throw new Error(error);
     }
   },
-  updateCategory: async (
+  async updateCategory(
     _root: undefined,
     { id, input }: { id: string; input: ICategory },
     context: AppContext
-  ): Promise<OCategory> => {
+  ): Promise<string> {
     try {
       checkAdmin(context);
 
@@ -59,17 +59,17 @@ const CategoryMutations = {
         name: input.name.toLowerCase(),
       });
 
-      return category;
+      return `Category with id: ${id} updated sucessfully.`;
     } catch (error: any) {
       console.error(error);
       throw new Error(error);
     }
   },
-  deleteCategory: async (
+  async deleteCategory(
     _root: undefined,
     { id }: { id: string },
     context: AppContext
-  ): Promise<string> => {
+  ): Promise<string> {
     try {
       checkAdmin(context);
 
