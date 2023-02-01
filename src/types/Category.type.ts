@@ -9,6 +9,7 @@ type OCategory = {
   _id: ObjectId;
   name: string;
   image?: string;
+  isFeatured?: boolean;
   createdAt: NativeDate;
   updatedAt: NativeDate;
 };

@@ -41,7 +41,7 @@ const UserQueries = {
 
       const count = await User.count(query);
       const data = await User.find(query)
-        .skip(page - 1)
+        .skip((page - 1) * limit)
         .limit(limit)
         .sort({ createdAt: "desc" });
 

@@ -20,7 +20,7 @@ const CommentQueries = {
       const count = await Comment.count(query);
       const data = await Comment.find(query)
         .populate("user")
-        .skip(page - 1)
+        .skip((page - 1) * limit)
         .limit(limit)
         .sort({ createdAt: "desc" });
 

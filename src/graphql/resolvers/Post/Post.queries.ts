@@ -19,8 +19,8 @@ const PostQueries = {
 
       if (!post || !post?.isPublished) throw new ApolloError("No post with that slug exists");
 
-      const likes = await Like.count({ _id: post?._id });
-      const comments = await Comment.count({ _id: post?._id });
+      const likes = await Like.count({ post: post?._id });
+      const comments = await Comment.count({ post: post?._id });
 
       return {
         post,
@@ -107,7 +107,7 @@ const PostQueries = {
       const count = await Post.count(query);
       const data = await Post.find(query)
         .populate("category")
-        .skip(page - 1)
+        .skip((page - 1) * limit)
         .limit(limit)
         .sort({ [sortBy]: order });
 
@@ -153,7 +153,7 @@ const PostQueries = {
       const count = await Post.count(query);
       const data = await Post.find(query)
         .populate("category")
-        .skip(page - 1)
+        .skip((page - 1) * limit)
         .limit(limit)
         .sort({ [sortBy]: order });
 

@@ -34,7 +34,7 @@ const CategoryQueries = {
 
       const count = await Category.count(query);
       const data = await Category.find(query)
-        .skip(page - 1)
+        .skip((page - 1) * limit)
         .limit(limit)
         .sort({ name: "asc" });
 
@@ -42,6 +42,18 @@ const CategoryQueries = {
         data,
         meta: generateMeta(page, count, limit),
       };
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
+  async getFeaturedCategories(): Promise<OCategory[]> {
+    try {
+      const query = { isFeatured: true };
+
+      const data = await Category.find(query).sort({ name: "asc" });
+
+      return data;
     } catch (error: any) {
       console.error(error);
       throw new Error(error);

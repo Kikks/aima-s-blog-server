@@ -85,6 +85,50 @@ const CategoryMutations = {
       throw new Error(error);
     }
   },
+  async featureCategory(
+    _root: undefined,
+    { id }: { id: string },
+    context: AppContext
+  ): Promise<string> {
+    try {
+      checkAdmin(context);
+
+      const category = await Category.findById(id);
+
+      if (!category) throw new ApolloError("No category with that id exists.");
+
+      await category.update({
+        isFeatured: true,
+      });
+
+      return `Category with id: ${id} has been featured successfully.`;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
+  async unfeatureCategory(
+    _root: undefined,
+    { id }: { id: string },
+    context: AppContext
+  ): Promise<string> {
+    try {
+      checkAdmin(context);
+
+      const category = await Category.findById(id);
+
+      if (!category) throw new ApolloError("No category with that id exists.");
+
+      await category.update({
+        isFeatured: false,
+      });
+
+      return `Category with id: ${id} has been unfeatured successfully.`;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
 };
 
 export default CategoryMutations;

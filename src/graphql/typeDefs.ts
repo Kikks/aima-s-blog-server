@@ -55,6 +55,7 @@ export const typeDefs = gql`
     id: ID!
     name: String!
     image: String
+    isFeatured: Boolean
     createdAt: String
     updatedAt: String
   }
@@ -165,6 +166,7 @@ export const typeDefs = gql`
 
   type Query {
     getCategories(search: String, page: Int, limit: Int): PaginatedCategories!
+    getFeaturedCategories: [Category]!
     getCategory(id: ID!): Category!
     getUsers(search: String, page: Int, limit: Int): PaginatedUsers!
     getUser(id: ID!): User!
@@ -190,7 +192,7 @@ export const typeDefs = gql`
     getFeaturedPosts: [FeaturedPost]!
     adminGetPost(id: ID!): SinglePostResponse!
     getUserLikeForPost(postId: ID!): Like
-    getComments(postId: ID!): PaginatedComments!
+    getComments(postId: ID!, limit: Int, page: Int): PaginatedComments!
     getAdmin: Admin!
     getTheme(id: ID!): Theme!
     getThemes: [Theme]!
@@ -209,6 +211,8 @@ export const typeDefs = gql`
     createPost(input: PostInput!): Post!
     featurePost(postId: ID!, themeId: ID!): String!
     unfeaturePost(id: ID!): String!
+    featureCategory(id: ID!): String!
+    unfeatureCategory(id: ID!): String!
     updatePost(id: ID!, input: PostInput!): String!
     deletePost(id: ID!): String!
     publishPost(id: ID!): String!

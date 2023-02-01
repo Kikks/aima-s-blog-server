@@ -10,6 +10,10 @@ const CategorySchema = new Schema(
       type: String,
       default: "",
     },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
