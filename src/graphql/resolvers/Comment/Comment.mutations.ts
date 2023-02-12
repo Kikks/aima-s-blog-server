@@ -57,7 +57,7 @@ const CommentMutations = {
       const storedUser = await User.findOne({ email: user?.email as string });
       if (!storedUser) throw new ApolloError("User does not exist.");
 
-      if (comment?.user !== storedUser?.id)
+      if (comment?.user?.toString() !== storedUser?._id?.toString())
         throw new AuthenticationError("You are not permitted to update this comment");
 
       await comment.update({
@@ -84,7 +84,7 @@ const CommentMutations = {
       const storedUser = await User.findOne({ email: user?.email as string });
       if (!storedUser) throw new ApolloError("User does not exist.");
 
-      if (comment?.user !== storedUser?.id)
+      if (comment?.user?.toString() !== storedUser?._id?.toString())
         throw new AuthenticationError("You are not permitted to delete this comment");
 
       await comment.delete();

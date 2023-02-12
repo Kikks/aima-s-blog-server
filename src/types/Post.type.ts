@@ -21,6 +21,7 @@ type OPost = {
   body: string;
   category?: PopulatedDoc<ICategory & Document>;
   isPublished: boolean;
+  publishedAt?: NativeDate;
   createdAt: NativeDate;
   updatedAt: NativeDate;
 };
@@ -28,6 +29,7 @@ type OPost = {
 type OFeaturedPost = {
   post: PopulatedDoc<OPost & Document>;
   theme: PopulatedDoc<OTheme & Document>;
+  index: number;
 };
 
 export { IPost, OPost, OFeaturedPost };

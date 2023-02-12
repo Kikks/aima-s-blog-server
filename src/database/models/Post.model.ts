@@ -1,4 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import Comment from "./Comment.model";
+import FeaturedPost from "./FeaturedPost.model";
+import Like from "./Like.model";
 const slug = require("mongoose-slug-generator");
 
 const PostSchema = new Schema(
@@ -36,9 +39,55 @@ const PostSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    publishedAt: {
+      type: Date,
+      default: "",
+    },
   },
   { timestamps: true }
 );
+
+PostSchema.pre("deleteMany", async function (next) {
+  // @ts-ignore
+  if (this?._id) {
+    // @ts-ignore
+    await FeaturedPost.deleteMany({ post: this._id });
+    // @ts-ignore
+    await Comment.deleteMany({ post: this._id });
+    // @ts-ignore
+    await Like.deleteMany({ post: this._id });
+  }
+
+  next();
+});
+
+PostSchema.pre("deleteOne", async function (next) {
+  // @ts-ignore
+  if (this?._id) {
+    // @ts-ignore
+    await FeaturedPost.deleteMany({ post: this._id });
+    // @ts-ignore
+    await Comment.deleteMany({ post: this._id });
+    // @ts-ignore
+    await Like.deleteMany({ post: this._id });
+  }
+
+  next();
+});
+
+PostSchema.pre("remove", async function (next) {
+  // @ts-ignore
+  if (this?._id) {
+    // @ts-ignore
+    await FeaturedPost.deleteMany({ post: this._id });
+    // @ts-ignore
+    await Comment.deleteMany({ post: this._id });
+    // @ts-ignore
+    await Like.deleteMany({ post: this._id });
+  }
+
+  next();
+});
 
 PostSchema.plugin(slug);
 

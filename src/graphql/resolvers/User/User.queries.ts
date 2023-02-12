@@ -54,6 +54,18 @@ const UserQueries = {
       throw new Error(error);
     }
   },
+  async countUsers(_root: any, _input: any, context: AppContext): Promise<number> {
+    try {
+      checkAdmin(context);
+
+      const count = await User.count();
+
+      return count;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
 };
 
 export default UserQueries;

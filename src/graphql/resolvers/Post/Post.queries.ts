@@ -40,16 +40,16 @@ const PostQueries = {
       const post = await Post.findById(postId);
       if (!post) throw new ApolloError("No post with that id exists");
 
-      const prev = await Post.findOne({ createdAt: { $lt: post?.createdAt } })
+      const prev = await Post.findOne({ publishedAt: { $lt: post?.publishedAt } })
         .populate("category")
         .sort({
-          createdAt: "desc",
+          publishedAt: "desc",
         });
 
-      const next = await Post.findOne({ createdAt: { $gt: post?.createdAt } })
+      const next = await Post.findOne({ publishedAt: { $gt: post?.publishedAt } })
         .populate("category")
         .sort({
-          createdAt: "asc",
+          publishedAt: "asc",
         });
 
       return { prev, next };
@@ -90,7 +90,7 @@ const PostQueries = {
       page = 1,
       search = "",
       category = "",
-      sortBy = "createdAt",
+      sortBy = "publishedAt",
       order = "desc",
     }: QueryParams & { category?: string; sortBy?: string; order?: "desc" | "asc" }
   ): Promise<Pagination<OPost>> {
@@ -177,6 +177,42 @@ const PostQueries = {
         .sort({ createdAt: "asc" });
 
       return data;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
+  async getIsPostFeatured(_root: any, { postId }: { postId: string }): Promise<boolean> {
+    try {
+      const featuredPost = await FeaturedPost.findOne({ post: postId });
+
+      return !!featuredPost;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
+  async countPosts(
+    _root: any,
+    _inputs: any,
+    context: AppContext
+  ): Promise<{
+    total: number;
+    published: number;
+    drafts: number;
+  }> {
+    try {
+      checkAdmin(context);
+
+      const total = await Post.count();
+      const published = await Post.count({ isPublished: true });
+      const drafts = await Post.count({ isPublished: false });
+
+      return {
+        total,
+        published,
+        drafts,
+      };
     } catch (error: any) {
       console.error(error);
       throw new Error(error);

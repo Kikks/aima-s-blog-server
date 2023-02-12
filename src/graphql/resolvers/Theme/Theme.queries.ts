@@ -17,10 +17,18 @@ const ThemeQueries = {
       throw new Error(error);
     }
   },
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getThemes(_root: any, _inputs: any): Promise<OTheme[]> {
+  async getLatestTheme(): Promise<OTheme> {
+    const theme = await Theme.findOne().sort({ createdAt: "desc" });
+
+    if (!theme) {
+      throw new UserInputError("No theme exists.");
+    }
+
+    return theme;
+  },
+  async getThemes(): Promise<OTheme[]> {
     try {
-      const data = await Theme.find();
+      const data = await Theme.find().sort({ name: "asc" });
 
       return data;
     } catch (error: any) {

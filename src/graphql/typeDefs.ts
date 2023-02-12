@@ -55,6 +55,7 @@ export const typeDefs = gql`
     id: ID!
     name: String!
     image: String
+    description: String
     isFeatured: Boolean
     createdAt: String
     updatedAt: String
@@ -63,6 +64,7 @@ export const typeDefs = gql`
   input CategoryInput {
     name: String!
     image: String
+    description: String
   }
 
   type Comment {
@@ -108,6 +110,7 @@ export const typeDefs = gql`
     body: String!
     category: Category!
     isPublished: Boolean
+    publishedAt: String
     createdAt: String
     updatedAt: String
   }
@@ -116,12 +119,14 @@ export const typeDefs = gql`
     id: ID!
     post: Post!
     theme: Theme!
+    index: Int!
     createdAt: String
     updatedAt: String
   }
 
   input PostInput {
     title: String!
+    audio: String
     coverImage: String!
     body: String!
     category: ID!
@@ -159,17 +164,37 @@ export const typeDefs = gql`
     meta: Meta
   }
 
+  type CategoriesStats {
+    category: Category!
+    posts: Int!
+  }
+
+  type PaginatedCategoriesStats {
+    data: [CategoriesStats]!
+    meta: Meta
+  }
+
   type PreviousAndNextPosts {
     prev: Post
     next: Post
   }
 
+  type CountPostResponse {
+    total: Int!
+    published: Int!
+    drafts: Int!
+  }
+
   type Query {
+    countCategories: Int!
     getCategories(search: String, page: Int, limit: Int): PaginatedCategories!
+    getCategoriesStats(search: String, page: Int, limit: Int): PaginatedCategoriesStats!
     getFeaturedCategories: [Category]!
     getCategory(id: ID!): Category!
+    countUsers: Int!
     getUsers(search: String, page: Int, limit: Int): PaginatedUsers!
     getUser(id: ID!): User!
+    countPosts: CountPostResponse!
     getPosts(
       search: String
       page: Int
@@ -196,6 +221,8 @@ export const typeDefs = gql`
     getAdmin: Admin!
     getTheme(id: ID!): Theme!
     getThemes: [Theme]!
+    getLatestTheme: Theme!
+    getIsPostFeatured(postId: ID!): Boolean!
   }
 
   type Mutation {
@@ -209,13 +236,14 @@ export const typeDefs = gql`
     updateCategory(id: ID!, input: CategoryInput!): String!
     deleteCategory(id: ID!): String!
     createPost(input: PostInput!): Post!
-    featurePost(postId: ID!, themeId: ID!): String!
-    unfeaturePost(id: ID!): String!
+    featurePost(postId: ID!, themeId: ID!, index: Int): String!
+    unfeaturePost(postId: ID!): String!
     featureCategory(id: ID!): String!
     unfeatureCategory(id: ID!): String!
     updatePost(id: ID!, input: PostInput!): String!
     deletePost(id: ID!): String!
     publishPost(id: ID!): String!
+    unpublishPost(id: ID!): String!
     likePost(postId: ID!): String
     createComment(postId: ID!, input: CommentInput!): Comment!
     updateComment(id: ID!, input: CommentInput!): String!

@@ -12,6 +12,10 @@ const FeaturedPostSchema = new Schema(
       required: true,
       ref: "Theme",
     },
+    index: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );

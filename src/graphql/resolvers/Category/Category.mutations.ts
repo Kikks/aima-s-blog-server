@@ -1,7 +1,7 @@
 import { ApolloError, UserInputError } from "apollo-server-express";
 import { AppContext } from "../../../types/AppContext.type";
 import { checkAdmin } from "../../../utils/checkAuth";
-import { Category } from "../../../database/models";
+import { Category, Post } from "../../../database/models";
 import { ICategory, OCategory } from "../../../types";
 import { validateCreateCategoryInput } from "../../../utils/validators";
 
@@ -76,6 +76,19 @@ const CategoryMutations = {
       const category = await Category.findById(id);
 
       if (!category) throw new ApolloError("No category with that id exists.");
+
+      // This does not call the post.pre("deleteMany")
+      // await Post.deleteMany({ category: id });
+
+      // This block is very expensive but has to be used so as to delete all
+      // post likes, comments and featured posts
+      const postsInCategory = await Post.find({ category: id });
+      for (let i = 0; i < postsInCategory.length; i++) {
+        if (postsInCategory[i]) {
+          await postsInCategory[i].delete();
+        }
+      }
+      // ///////////////////////////////////////////////////////////////////
 
       await category.delete();
 
