@@ -8,8 +8,7 @@
 		"client": "npm start --prefix frontend",
 		"server": "nodemon --exec ts-node src/index.ts",
 		"dev": "concurrently \"npm run start\" \"npm run client\"",
-		"build": "tsc -p tsconfig.json",
-		"seed": "ts-node src/temp/seed.ts"
+		"build": "tsc -p tsconfig.json"
 	},
 	"keywords": [],
 	"author": "Olufemi Samuel",
