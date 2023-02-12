@@ -4,11 +4,11 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "ts-node-dev --respawn src/index.ts",
+		"start": "NODE_ENV=production node build/index.js",
 		"client": "npm start --prefix frontend",
 		"server": "nodemon --exec ts-node src/index.ts",
 		"dev": "concurrently \"npm run start\" \"npm run client\"",
-		"build": "tsc -p build",
+		"build": "tsc -p tsconfig.json",
 		"seed": "ts-node src/temp/seed.ts"
 	},
 	"keywords": [],
