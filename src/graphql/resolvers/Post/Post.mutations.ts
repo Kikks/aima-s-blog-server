@@ -31,7 +31,7 @@ const PostMutations = {
 
       const post = await Post.create({
         ...input,
-        preview,
+        preview: preview.replace(/(<([^>]+)>)/gi, ""),
       });
 
       const populatedPost = await post.populate("category");
@@ -70,7 +70,7 @@ const PostMutations = {
 
       await post.update({
         ...input,
-        preview,
+        preview: preview.replace(/(<([^>]+)>)/gi, ""),
       });
 
       return `Post with id: ${id} updated successfully.`;
