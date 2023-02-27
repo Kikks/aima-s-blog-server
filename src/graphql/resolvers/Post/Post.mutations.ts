@@ -28,10 +28,11 @@ const PostMutations = {
         (item: any) => item.type === "paragraph"
       );
       const preview = previewElement?.data?.text || "";
+      const sanitizedPreview = preview.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/, " ");
 
       const post = await Post.create({
         ...input,
-        preview: preview.replace(/(<([^>]+)>)/gi, ""),
+        preview: sanitizedPreview,
       });
 
       const populatedPost = await post.populate("category");
@@ -67,10 +68,11 @@ const PostMutations = {
         (item: any) => item.type === "paragraph"
       );
       const preview = previewElement?.data?.text || "";
+      const sanitizedPreview = preview.replace(/(<([^>]+)>)/gi, "").replace(/&nbsp;/, " ");
 
       await post.update({
         ...input,
-        preview: preview.replace(/(<([^>]+)>)/gi, ""),
+        preview: sanitizedPreview,
       });
 
       return `Post with id: ${id} updated successfully.`;
