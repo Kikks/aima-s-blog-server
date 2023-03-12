@@ -70,7 +70,8 @@ export const typeDefs = gql`
   type Comment {
     id: ID!
     body: String!
-    post: ID!
+    post: ID
+    comment: ID
     user: User!
     createdAt: String
     updatedAt: String
@@ -82,7 +83,8 @@ export const typeDefs = gql`
 
   type Like {
     id: ID!
-    post: ID!
+    post: ID
+    category: ID
     user: ID!
     createdAt: String
     updatedAt: String
