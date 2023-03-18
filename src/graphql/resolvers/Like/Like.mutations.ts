@@ -35,6 +35,37 @@ const LikeMutations = {
       throw new Error(error);
     }
   },
+  async likeComment(
+    _root: undefined,
+    { commentId }: { commentId: string },
+    context: AppContext
+  ): Promise<string> {
+    try {
+      const user: any = await checkUser(context);
+
+      const storedUser = await User.findOne({ email: user?.email as string });
+      if (!storedUser) throw new ApolloError("User does not exist.");
+
+      const like = await Like.findOne({
+        comment: commentId,
+        user: storedUser?._id,
+      });
+
+      if (like) {
+        await like.delete();
+        return "Comment unliked successfully";
+      } else {
+        await Like.create({
+          comment: commentId,
+          user: storedUser?._id,
+        });
+        return "Comment liked successfully";
+      }
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
 };
 
 export default LikeMutations;

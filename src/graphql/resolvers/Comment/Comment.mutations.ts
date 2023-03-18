@@ -37,6 +37,37 @@ const CommentMutations = {
       throw new Error(error);
     }
   },
+  async createCommentForComment(
+    _root: undefined,
+    { commentId, input }: { commentId: string; input: IComment },
+    context: AppContext
+  ): Promise<OComment> {
+    try {
+      const user: any = await checkUser(context);
+
+      const { valid, errors } = validateCreateCommentInput(input);
+      if (!valid)
+        throw new UserInputError("Something is wrong with your inputs.", {
+          errors,
+        });
+
+      const storedUser = await User.findOne({ email: user?.email as string });
+      if (!storedUser) throw new ApolloError("User does not exist.");
+
+      const comment = await Comment.create({
+        comment: commentId,
+        body: input?.body,
+        user: storedUser?._id,
+      });
+
+      const populatedComment = await comment.populate("user");
+
+      return populatedComment;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
   async updateComment(
     _root: undefined,
     { id, input }: { id: string; input: IComment },

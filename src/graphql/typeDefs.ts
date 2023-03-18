@@ -84,7 +84,7 @@ export const typeDefs = gql`
   type Like {
     id: ID!
     post: ID
-    category: ID
+    comment: ID
     user: ID!
     createdAt: String
     updatedAt: String
@@ -187,6 +187,11 @@ export const typeDefs = gql`
     drafts: Int!
   }
 
+  type LikesAndCommentCount {
+    likes: Int!
+    comments: Int!
+  }
+
   type Query {
     countCategories: Int!
     getCategories(search: String, page: Int, limit: Int): PaginatedCategories!
@@ -219,7 +224,10 @@ export const typeDefs = gql`
     getFeaturedPosts: [FeaturedPost]!
     adminGetPost(id: ID!): SinglePostResponse!
     getUserLikeForPost(postId: ID!): Like
+    getUserLikeForComment(commentId: ID!): Like
     getComments(postId: ID!, limit: Int, page: Int): PaginatedComments!
+    getCommentsForComment(commentId: ID!, limit: Int, page: Int): PaginatedComments!
+    getCommentLikesAndCommentsCount(commentId: ID!): LikesAndCommentCount!
     getAdmin: Admin!
     getTheme(id: ID!): Theme!
     getThemes: [Theme]!
@@ -247,7 +255,9 @@ export const typeDefs = gql`
     publishPost(id: ID!): String!
     unpublishPost(id: ID!): String!
     likePost(postId: ID!): String
+    likeComment(commentId: ID!): String
     createComment(postId: ID!, input: CommentInput!): Comment!
+    createCommentForComment(commentId: ID!, input: CommentInput!): Comment!
     updateComment(id: ID!, input: CommentInput!): String!
     deleteComment(id: ID!): String!
     createTheme(name: String!): Theme!

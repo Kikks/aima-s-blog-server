@@ -7,7 +7,8 @@ type ILike = {
 
 type OLike = {
   _id: ObjectId;
-  post: ObjectId;
+  post?: ObjectId;
+  comment?: ObjectId;
   user: ObjectId;
   createdAt: NativeDate;
   updatedAt: NativeDate;

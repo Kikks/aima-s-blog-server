@@ -27,6 +27,28 @@ const LikeQueries = {
       throw new Error(error);
     }
   },
+  async getUserLikeForComment(
+    _root: any,
+    { commentId }: { commentId: string },
+    context: AppContext
+  ): Promise<OLike | null> {
+    try {
+      const user: any = await checkUser(context);
+
+      const storedUser = await User.findOne({ email: user?.email as string });
+      if (!storedUser) throw new ApolloError("User does not exist.");
+
+      const like = await Like.findOne({
+        comment: commentId,
+        user: storedUser?._id,
+      });
+
+      return like;
+    } catch (error: any) {
+      console.error(error);
+      throw new Error(error);
+    }
+  },
 };
 
 export default LikeQueries;

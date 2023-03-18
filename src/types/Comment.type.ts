@@ -9,7 +9,8 @@ type IComment = {
 type OComment = {
   _id: ObjectId;
   body: string;
-  post: ObjectId;
+  post?: ObjectId;
+  comment?: ObjectId;
   user: PopulatedDoc<OUser & Document>;
   createdAt: NativeDate;
   updatedAt: NativeDate;
