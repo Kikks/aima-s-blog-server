@@ -25,6 +25,7 @@ const mount = async (app: Application) => {
       context: ({ req }) => ({ req }),
     });
     await server.start();
+    // @ts-ignore
     server.applyMiddleware({ app, path: "/api" });
 
     app.listen(PORT, () => console.log(`[app]: http://localhost:${PORT}`));
