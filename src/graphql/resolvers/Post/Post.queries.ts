@@ -1,11 +1,12 @@
 import { ApolloError, UserInputError } from "apollo-server-express";
+import { GraphQLResolveInfo } from "graphql";
 import { Comment, FeaturedPost, Like, Post } from "../../../database/models";
 import { OFeaturedPost, OPost } from "../../../types";
 import { AppContext } from "../../../types/AppContext.type";
 import { Pagination } from "../../../types/Pagination.type";
 import { QueryParams } from "../../../types/QueryParams.type";
 import { checkAdmin } from "../../../utils/checkAuth";
-import { generateMeta } from "../../../utils/misc";
+import { generateMeta, postProjection } from "../../../utils/misc";
 import { isEmpty } from "../../../utils/validators/helpers";
 import { validateQueryParams } from "../../../utils/validators/QueryParams.validator";
 
@@ -19,8 +20,10 @@ const PostQueries = {
 
       if (!post || !post?.isPublished) throw new ApolloError("No post with that slug exists");
 
-      const likes = await Like.count({ post: post?._id });
-      const comments = await Comment.count({ post: post?._id });
+      const [likes, comments] = await Promise.all([
+        Like.count({ post: post?._id }),
+        Comment.count({ post: post?._id }),
+      ]);
 
       return {
         post,
@@ -34,23 +37,28 @@ const PostQueries = {
   },
   async getPreviousAndNextPosts(
     _root: any,
-    { postId }: { postId: string }
+    { postId }: { postId: string },
+    _context: AppContext,
+    info: GraphQLResolveInfo
   ): Promise<{ prev?: OPost | null; next: OPost | null }> {
     try {
-      const post = await Post.findById(postId);
+      const post = await Post.findById(postId).select("publishedAt");
       if (!post) throw new ApolloError("No post with that id exists");
 
-      const prev = await Post.findOne({ publishedAt: { $lt: post?.publishedAt } })
-        .populate("category")
-        .sort({
-          publishedAt: "desc",
-        });
-
-      const next = await Post.findOne({ publishedAt: { $gt: post?.publishedAt } })
-        .populate("category")
-        .sort({
-          publishedAt: "asc",
-        });
+      const [prev, next] = await Promise.all([
+        Post.findOne({ publishedAt: { $lt: post?.publishedAt } })
+          .select(postProjection(info))
+          .populate("category")
+          .sort({
+            publishedAt: "desc",
+          }),
+        Post.findOne({ publishedAt: { $gt: post?.publishedAt } })
+          .select(postProjection(info))
+          .populate("category")
+          .sort({
+            publishedAt: "asc",
+          }),
+      ]);
 
       return { prev, next };
     } catch (error: any) {
@@ -92,7 +100,9 @@ const PostQueries = {
       category = "",
       sortBy = "publishedAt",
       order = "desc",
-    }: QueryParams & { category?: string; sortBy?: string; order?: "desc" | "asc" }
+    }: QueryParams & { category?: string; sortBy?: string; order?: "desc" | "asc" },
+    _context: AppContext,
+    info: GraphQLResolveInfo
   ): Promise<Pagination<OPost>> {
     try {
       const { valid } = validateQueryParams({ limit, page });
@@ -104,12 +114,15 @@ const PostQueries = {
         ...(category ? { category } : {}),
       };
 
-      const count = await Post.count(query);
-      const data = await Post.find(query)
-        .populate("category")
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .sort({ [sortBy]: order });
+      const [count, data] = await Promise.all([
+        Post.count(query),
+        Post.find(query)
+          .select(postProjection(info))
+          .populate("category")
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .sort({ [sortBy]: order }),
+      ]);
 
       return {
         data,
@@ -136,7 +149,8 @@ const PostQueries = {
       sortBy?: string;
       order?: "desc" | "asc";
     },
-    context: AppContext
+    context: AppContext,
+    info: GraphQLResolveInfo
   ): Promise<Pagination<OPost>> {
     try {
       checkAdmin(context);
@@ -150,12 +164,15 @@ const PostQueries = {
         ...(typeof isPublished === "undefined" ? {} : { isPublished }),
       };
 
-      const count = await Post.count(query);
-      const data = await Post.find(query)
-        .populate("category")
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .sort({ [sortBy]: order });
+      const [count, data] = await Promise.all([
+        Post.count(query),
+        Post.find(query)
+          .select(postProjection(info))
+          .populate("category")
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .sort({ [sortBy]: order }),
+      ]);
 
       return {
         data,
@@ -166,11 +183,17 @@ const PostQueries = {
       throw new Error(error);
     }
   },
-  async getFeaturedPosts(): Promise<OFeaturedPost[]> {
+  async getFeaturedPosts(
+    _root: any,
+    _inputs: any,
+    _context: AppContext,
+    info: GraphQLResolveInfo
+  ): Promise<OFeaturedPost[]> {
     try {
       const data = await FeaturedPost.find()
         .populate({
           path: "post",
+          select: postProjection(info),
           populate: "category",
         })
         .populate("theme")
